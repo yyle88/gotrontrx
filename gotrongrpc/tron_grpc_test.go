@@ -1,17 +1,11 @@
 package gotrongrpc
 
 import (
-	"encoding/base64"
 	"math/big"
 	"testing"
 
-	"github.com/fbsobreira/gotron-sdk/pkg/proto/api"
-	"github.com/fbsobreira/gotron-sdk/pkg/proto/core"
 	"github.com/stretchr/testify/require"
-	"github.com/yyle88/gotron/gotronhash"
-	"github.com/yyle88/gotron/gotronsign"
-	"github.com/yyle88/gotron/internal/utils"
-	"google.golang.org/protobuf/encoding/protojson"
+	"github.com/yyle88/gotron/internal/neatjson"
 )
 
 var caseClient *Client
@@ -30,13 +24,13 @@ func TestGrpcClient_Transfer(t *testing.T) {
 		1000,
 	)
 	require.NoError(t, err)
-	t.Log(utils.SoftNeatString(txn))
+	t.Log(neatjson.SoftNeat(txn))
 }
 
 func TestGrpcClient_Balance(t *testing.T) {
 	txn, err := caseClientShasta.grpcClient.GetAccountDetailed("TBYHGsFkshasvB3R6Zys4627h98owvUNFn")
 	require.NoError(t, err)
-	t.Log(utils.SoftNeatString(txn))
+	t.Log(neatjson.SoftNeat(txn))
 }
 
 func TestGrpcClient_TRC20Send(t *testing.T) {
@@ -48,7 +42,7 @@ func TestGrpcClient_TRC20Send(t *testing.T) {
 		200,
 	)
 	require.NoError(t, err)
-	t.Log(utils.SoftNeatString(txn))
+	t.Log(neatjson.SoftNeat(txn))
 }
 
 func TestGrpcClient_TRC20ContractBalance(t *testing.T) {
@@ -57,7 +51,7 @@ func TestGrpcClient_TRC20ContractBalance(t *testing.T) {
 		"TG3XXyExBkPp9nzdajDZsozEu4BkaSJozs",
 	)
 	require.NoError(t, err)
-	t.Log(utils.SoftNeatString(value))
+	t.Log(neatjson.SoftNeat(value))
 }
 
 func TestGrpcClient_TRC20Allowance(t *testing.T) {
@@ -107,38 +101,5 @@ func TestGrpcClient_Transfer_LuoLuoToFengGe(t *testing.T) {
 		5000000,
 	)
 	require.NoError(t, err)
-	t.Log(utils.SoftNeatString(txn))
-
-	caseSignTronTransactionSendBroadcast(t, txn)
-}
-
-func caseSignTronTransactionSendBroadcast(t *testing.T, txn *api.TransactionExtention) {
-	rawTx := txn.Transaction.RawData
-
-	{
-		txData, err := protojson.Marshal(rawTx)
-		require.NoError(t, err)
-		t.Log(utils.NeatStringXBytes(txData))
-	}
-	{
-		txHash, err := gotronhash.GetTxHashHex(rawTx)
-		require.NoError(t, err)
-		t.Log(txHash)
-	}
-
-	privateKeyHex := "-YOUR PRIVATE KEY-"
-
-	signature, err := gotronsign.Sign(privateKeyHex, rawTx)
-	require.NoError(t, err)
-	t.Log(len(signature))
-	t.Log(base64.StdEncoding.EncodeToString(signature))
-
-	paramX := &core.Transaction{
-		RawData:   rawTx,
-		Signature: [][]byte{signature},
-	}
-
-	res, err := caseClientShasta.grpcClient.Broadcast(paramX)
-	require.NoError(t, err)
-	t.Log(utils.SoftNeatString(res))
+	t.Log(neatjson.SoftNeat(txn))
 }

@@ -1,4 +1,4 @@
-package utils
+package neatjson
 
 import (
 	"bytes"
@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func SoftNeatString(v interface{}) string {
+func SoftNeat(v interface{}) string {
 	data, err := NeatBytes(v)
 	if err != nil {
 		return "" //when the result is empty string, means wrong
