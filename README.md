@@ -4,15 +4,14 @@
 
 使用这段代码能创建钱包：
 https://gist.github.com/motopig/c680f53897429fd15f5b3ca9aa6f6ed2
-当然其它的也行
+当然其它的也能创建钱包。
 
+区块链的钱包创建是离线的，你可以使用任意你觉得趁手的离线工具生成你的钱包（任何通过网页在线创建私钥的行为都是耍流氓）
 
 ## 第二步去链上查钱包信息：
 
 创建完即可在测试链查看资产情况：
 https://shasta.tronscan.org/#/address/TBYHGsFkshasvB3R6Zys4627h98owvUNFn
-
-区块链的钱包创建是离线的，你可以使用任意你觉得趁手的离线工具生成你的钱包（任何通过网页在线创建私钥的行为都是耍流氓）
 
 只要你创建完钱包，在任意波场链（即主网，shasta测试网，nile测试网）查询都是能查到信息（但资产都是空的，是个空账号）
 
@@ -26,7 +25,10 @@ https://shasta.tronscan.org/#/address/TBYHGsFkshasvB3R6Zys4627h98owvUNFn
 在波场官方中文客服群里即可领取测试币5000个TRX：
 https://t.me/TronOfficialTechSupport
 
-具体操作进群以后输入消息:
+当然在英文Telegram群里也能领取5000个TRX测试币：
+@TronOfficialDevelopersGroupEn
+
+具体操作进群以后输入消息（在以上两个群里均可）:
 ```
 !help
 ```
