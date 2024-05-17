@@ -5,7 +5,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
-	"github.com/yyle88/gotron/internal/neatjson"
+	"github.com/yyle88/gotron/internal/utils"
 )
 
 func TestNewGrpcClient(t *testing.T) {
@@ -13,7 +13,7 @@ func TestNewGrpcClient(t *testing.T) {
 
 	nodeInfo, err := client.grpcClient.GetNodeInfo()
 	require.NoError(t, err)
-	t.Log(neatjson.SoftNeat(nodeInfo))
+	t.Log(utils.SoftNeat(nodeInfo))
 }
 
 func mustNewClient(address string) *Client {

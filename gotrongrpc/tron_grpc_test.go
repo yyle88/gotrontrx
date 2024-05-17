@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/yyle88/gotron/internal/neatjson"
+	"github.com/yyle88/gotron/internal/utils"
 )
 
 var caseClient *Client
@@ -24,13 +24,13 @@ func TestGrpcClient_Transfer(t *testing.T) {
 		1000,
 	)
 	require.NoError(t, err)
-	t.Log(neatjson.SoftNeat(txn))
+	t.Log(utils.SoftNeat(txn))
 }
 
 func TestGrpcClient_Balance(t *testing.T) {
 	txn, err := caseClientShasta.grpcClient.GetAccountDetailed("TBYHGsFkshasvB3R6Zys4627h98owvUNFn")
 	require.NoError(t, err)
-	t.Log(neatjson.SoftNeat(txn))
+	t.Log(utils.SoftNeat(txn))
 }
 
 func TestGrpcClient_TRC20Send(t *testing.T) {
@@ -42,7 +42,7 @@ func TestGrpcClient_TRC20Send(t *testing.T) {
 		200,
 	)
 	require.NoError(t, err)
-	t.Log(neatjson.SoftNeat(txn))
+	t.Log(utils.SoftNeat(txn))
 }
 
 func TestGrpcClient_TRC20ContractBalance(t *testing.T) {
@@ -51,7 +51,7 @@ func TestGrpcClient_TRC20ContractBalance(t *testing.T) {
 		"TG3XXyExBkPp9nzdajDZsozEu4BkaSJozs",
 	)
 	require.NoError(t, err)
-	t.Log(neatjson.SoftNeat(value))
+	t.Log(utils.SoftNeat(value))
 }
 
 func TestGrpcClient_TRC20Allowance(t *testing.T) {
@@ -101,5 +101,5 @@ func TestGrpcClient_Transfer_LuoLuoToFengGe(t *testing.T) {
 		5000000,
 	)
 	require.NoError(t, err)
-	t.Log(neatjson.SoftNeat(txn))
+	t.Log(utils.SoftNeat(txn))
 }

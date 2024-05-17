@@ -8,11 +8,11 @@ import (
 	"github.com/fbsobreira/gotron-sdk/pkg/proto/api"
 	"github.com/fbsobreira/gotron-sdk/pkg/proto/core"
 	"github.com/pkg/errors"
+	"github.com/yyle88/done"
 	"github.com/yyle88/gotron/gotrongrpc"
 	"github.com/yyle88/gotron/gotronhash"
 	"github.com/yyle88/gotron/gotronsign"
-	"github.com/yyle88/gotron/internal/check"
-	"github.com/yyle88/gotron/internal/neatjson"
+	"github.com/yyle88/gotron/internal/utils"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -45,15 +45,15 @@ func main() {
 	}
 
 	client, err := gotrongrpc.NewClientWithAddress(grpcAddress)
-	check.Done(err)
+	done.Done(err)
 
 	txn, err := client.GetGrpcClient().Transfer(
 		fromAddress,
 		toAddress,
 		amount,
 	)
-	check.Done(err)
-	fmt.Println(neatjson.SoftNeat(txn))
+	done.Done(err)
+	fmt.Println(utils.SoftNeat(txn))
 
 	signature := signTx(privateKeyHex, txn.Transaction.RawData)
 
@@ -63,19 +63,19 @@ func main() {
 func signTx(privateKeyHex string, rawTx *core.TransactionRaw) []byte {
 	{
 		txData, err := protojson.Marshal(rawTx)
-		check.Done(err)
-		txNeat, err := neatjson.NeatStringXBytes(txData)
-		check.Done(err)
+		done.Done(err)
+		txNeat, err := utils.NeatStringFromBytes(txData)
+		done.Done(err)
 		fmt.Println("tx_neat:", txNeat)
 	}
 	{
 		txHash, err := gotronhash.GetTxHashHex(rawTx)
-		check.Done(err)
+		done.Done(err)
 		fmt.Println("tx_hash:", txHash)
 	}
 
 	signature, err := gotronsign.Sign(privateKeyHex, rawTx)
-	check.Done(err)
+	done.Done(err)
 
 	{
 		fmt.Println(len(signature))
@@ -92,8 +92,8 @@ func sendTx(client *gotrongrpc.Client, rawTx *core.TransactionRaw, signature []b
 	}
 
 	res, err := client.GetGrpcClient().Broadcast(paramX)
-	check.Done(err)
-	fmt.Println(neatjson.SoftNeat(res))
+	done.Done(err)
+	fmt.Println(utils.SoftNeat(res))
 
 	if !res.GetResult() {
 		panic(errors.New("result is false"))

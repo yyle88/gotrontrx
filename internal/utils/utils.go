@@ -1,4 +1,4 @@
-package neatjson
+package utils
 
 import (
 	"bytes"
@@ -23,16 +23,16 @@ func NeatBytes(v interface{}) ([]byte, error) {
 	return data, nil
 }
 
-func NeatStringXBytes(data []byte) (string, error) {
-	res, err := NeatXBytes(data)
+func NeatStringFromBytes(data []byte) (string, error) {
+	res, err := NeatFromBytes(data)
 	if err != nil {
 		return string(data), err
 	}
 	return string(res), nil
 }
 
-// NeatXBytes 把json的bytes变为neat的，当然假如不是Json就会报错，这块常用于测试的打印
-func NeatXBytes(data []byte) ([]byte, error) {
+// NeatFromBytes 把json的bytes变为neat的，当然假如不是Json就会报错，这块常用于测试的打印
+func NeatFromBytes(data []byte) ([]byte, error) {
 	var ob bytes.Buffer
 	if err := json.Indent(&ob, data, "", "\t"); err != nil {
 		return data, err
