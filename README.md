@@ -38,7 +38,7 @@ https://t.me/TronOfficialTechSupport
 当然为避免私钥泄露，只建议使用测试链钱包验证以下的Demo:
 [DEMO 最基本的trx转账](/demos/main_sendtrx/main.go)
 
-## 其它：
+## 其它的免责声明：
 数字货币都是骗局
 
 都是以空气币掠夺平民财富
