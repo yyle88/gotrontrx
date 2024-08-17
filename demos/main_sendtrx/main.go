@@ -53,7 +53,7 @@ func main() {
 		amount,
 	)
 	done.Done(err)
-	fmt.Println(utils.SoftNeat(txn))
+	fmt.Println(utils.Neat(txn))
 
 	signature := signTx(privateKeyHex, txn.Transaction.RawData)
 
@@ -93,7 +93,7 @@ func sendTx(client *gotrongrpc.Client, rawTx *core.TransactionRaw, signature []b
 
 	res, err := client.GetGrpcClient().Broadcast(paramX)
 	done.Done(err)
-	fmt.Println(utils.SoftNeat(res))
+	fmt.Println(utils.Neat(res))
 
 	if !res.GetResult() {
 		panic(errors.New("result is false"))

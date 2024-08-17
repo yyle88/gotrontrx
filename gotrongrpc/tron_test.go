@@ -13,7 +13,7 @@ func TestNewGrpcClient(t *testing.T) {
 
 	nodeInfo, err := client.grpcClient.GetNodeInfo()
 	require.NoError(t, err)
-	t.Log(utils.SoftNeat(nodeInfo))
+	t.Log(utils.Neat(nodeInfo))
 }
 
 func mustNewClient(address string) *Client {
