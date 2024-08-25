@@ -12,7 +12,8 @@ import (
 	"github.com/yyle88/gotron/gotrongrpc"
 	"github.com/yyle88/gotron/gotronhash"
 	"github.com/yyle88/gotron/gotronsign"
-	"github.com/yyle88/gotron/internal/utils"
+	"github.com/yyle88/neatjson"
+	"github.com/yyle88/neatjson/neatjsons"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -53,7 +54,7 @@ func main() {
 		amount,
 	)
 	done.Done(err)
-	fmt.Println(utils.Neat(txn))
+	fmt.Println(neatjsons.S(txn))
 
 	signature := signTx(privateKeyHex, txn.Transaction.RawData)
 
@@ -64,7 +65,7 @@ func signTx(privateKeyHex string, rawTx *core.TransactionRaw) []byte {
 	{
 		txData, err := protojson.Marshal(rawTx)
 		done.Done(err)
-		txNeat, err := utils.NeatStringFromBytes(txData)
+		txNeat, err := neatjson.TAB.SxB(txData)
 		done.Done(err)
 		fmt.Println("tx_neat:", txNeat)
 	}
@@ -93,7 +94,7 @@ func sendTx(client *gotrongrpc.Client, rawTx *core.TransactionRaw, signature []b
 
 	res, err := client.GetGrpcClient().Broadcast(paramX)
 	done.Done(err)
-	fmt.Println(utils.Neat(res))
+	fmt.Println(neatjsons.S(res))
 
 	if !res.GetResult() {
 		panic(errors.New("result is false"))
