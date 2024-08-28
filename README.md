@@ -1,4 +1,5 @@
-# gotron
+# gotrontrx
+以前叫 gotron 但感觉这个名字会和别人的包重名和冲突，既然如此叫 gotrontrx 吧，这样相对不容易冲突
 
 ## 第一步创建钱包：
 
@@ -8,7 +9,7 @@ https://gist.github.com/motopig/c680f53897429fd15f5b3ca9aa6f6ed2
 
 区块链的钱包创建是离线的，你可以使用任意你觉得趁手的离线工具生成你的钱包（任何通过网页在线创建私钥的行为都是耍流氓）
 
-## 第二步去链上查钱包信息：
+## 第二步去链上查钱包信息-主要是余额信息：
 
 创建完即可在测试链查看资产情况：
 https://shasta.tronscan.org/#/address/TBYHGsFkshasvB3R6Zys4627h98owvUNFn
