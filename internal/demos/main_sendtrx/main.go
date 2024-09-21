@@ -56,12 +56,12 @@ func main() {
 	done.Done(err)
 	fmt.Println(neatjsons.S(txn))
 
-	signature := signTx(privateKeyHex, txn.Transaction.RawData)
+	signature := signTransaction(privateKeyHex, txn.Transaction.RawData)
 
-	sendTx(client, txn.Transaction.RawData, signature)
+	sendTransaction(client, txn.Transaction.RawData, signature)
 }
 
-func signTx(privateKeyHex string, rawTx *core.TransactionRaw) []byte {
+func signTransaction(privateKeyHex string, rawTx *core.TransactionRaw) []byte {
 	{
 		txData, err := protojson.Marshal(rawTx)
 		done.Done(err)
@@ -86,7 +86,7 @@ func signTx(privateKeyHex string, rawTx *core.TransactionRaw) []byte {
 	return signature
 }
 
-func sendTx(client *gotrongrpc.Client, rawTx *core.TransactionRaw, signature []byte) {
+func sendTransaction(client *gotrongrpc.Client, rawTx *core.TransactionRaw, signature []byte) {
 	paramX := &core.Transaction{
 		RawData:   rawTx,
 		Signature: [][]byte{signature},

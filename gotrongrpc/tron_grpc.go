@@ -1,7 +1,6 @@
 package gotrongrpc
 
 import (
-	"fmt"
 	"math/big"
 
 	"github.com/fbsobreira/gotron-sdk/pkg/address"
@@ -67,11 +66,11 @@ Contract   string //代币合约地址
 func (g *Client) TRC20Allowance(owner string, spender string, contractAddress string) (*big.Int, error) {
 	addrA, err := address.Base58ToAddress(owner)
 	if err != nil {
-		return nil, fmt.Errorf("invalid address %s: %v", owner, owner)
+		return nil, errors.Errorf("invalid address %s: %v", owner, owner)
 	}
 	addrB, err := address.Base58ToAddress(spender)
 	if err != nil {
-		return nil, fmt.Errorf("invalid address %s: %v", spender, spender)
+		return nil, errors.Errorf("invalid address %s: %v", spender, spender)
 	}
 	req := trc20AllowanceMethodSignature
 	req += "0000000000000000000000000000000000000000000000000000000000000000"[len(addrA.Hex())-4:] + addrA.Hex()[4:]
