@@ -14,30 +14,22 @@ const trc20TransferFromMethodSignature = "0x23b872dd"
 const trc20AllowanceMethodSignature = "0xdd62ed3e"
 
 type Client struct {
-	grpcClient *client.GrpcClient
+	grpc *client.GrpcClient
 }
 
-func NewClient(grpcClient *client.GrpcClient) *Client {
-	return &Client{grpcClient: grpcClient}
+func NewClient(grpc *client.GrpcClient) *Client {
+	return &Client{grpc: grpc}
 }
 
-func NewClientWithAddress(address string) (*Client, error) {
-	grpcClient, err := NewGrpcClient(address)
-	if err != nil {
-		return nil, errors.WithMessage(err, "new_grpc_client is wrong")
-	}
-	return NewClient(grpcClient), nil
-}
-
-func (g *Client) GetGrpcClient() *client.GrpcClient {
-	return g.grpcClient
+func (g *Client) GetGrpc() *client.GrpcClient {
+	return g.grpc
 }
 
 /*
 TRC20TransferFrom
 在函数`transferFrom(address from, address to, uint256 value) public returns (bool)`中，参数`from`表示代币的拥有者或持有者的地址，而不是发起人的地址。
 该函数的目的是从一个地址（`from`）向另一个地址（`to`）转移一定数量的代币（`value`）。在使用`transferFrom`函数之前，需要确保调用者已经获得了`from`地址的授权，这通常是通过调用`approve`函数进行授权的。
-所以，`from`参数应该填入代币的持有者或拥有者的地址，而不是发起人的地址。通过这种方式，代币的持有者可以授权其他地址代表自己进行代币转移操作。
+这时，`from`参数应该填入代币的持有者或拥有者的地址，而不是发起人的地址。通过这种方式，代币的持有者可以授权其他地址代表自己进行代币转移操作。
 
 智能合约中，`transferFrom` 函数的发起人（也称为消息发送者）就是对该函数进行调用的账户或地址。
 */
@@ -54,7 +46,7 @@ func (g *Client) TRC20TransferFrom(operator, from, to, contract string, amount *
 	req += "0000000000000000000000000000000000000000000000000000000000000000"[len(addrA.Hex())-4:] + addrA.Hex()[4:]
 	req += "0000000000000000000000000000000000000000000000000000000000000000"[len(addrB.Hex())-4:] + addrB.Hex()[4:]
 	req += common.Bytes2Hex(common.LeftPadBytes(amount.Bytes(), 32))
-	return g.grpcClient.TRC20Call(operator, contract, req, false, feeLimit)
+	return g.grpc.TRC20Call(operator, contract, req, false, feeLimit)
 }
 
 /*
@@ -75,12 +67,12 @@ func (g *Client) TRC20Allowance(owner string, spender string, contractAddress st
 	req := trc20AllowanceMethodSignature
 	req += "0000000000000000000000000000000000000000000000000000000000000000"[len(addrA.Hex())-4:] + addrA.Hex()[4:]
 	req += "0000000000000000000000000000000000000000000000000000000000000000"[len(addrB.Hex())-4:] + addrB.Hex()[4:]
-	result, err := g.grpcClient.TRC20Call("", contractAddress, req, true, 0)
+	result, err := g.grpc.TRC20Call("", contractAddress, req, true, 0)
 	if err != nil {
 		return nil, err
 	}
 	data := common.BytesToHexString(result.GetConstantResult()[0])
-	r, err := g.grpcClient.ParseTRC20NumericProperty(data)
+	r, err := g.grpc.ParseTRC20NumericProperty(data)
 	if err != nil {
 		return nil, errors.Errorf("contract address %s: %v", contractAddress, err)
 	}

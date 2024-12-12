@@ -8,16 +8,15 @@ import (
 )
 
 const (
-	MainnetGrpc   = "grpc.trongrid.io:50051"
+	MainNetGrpc   = "grpc.trongrid.io:50051"
 	ShastaNetGrpc = "grpc.shasta.trongrid.io:50051"
 	NileNetGrpc   = "grpc.nile.trongrid.io:50051"
 )
 
 func NewGrpcClient(address string) (*client.GrpcClient, error) {
 	conn := client.NewGrpcClient(address)
-	err := conn.Start(grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		return nil, errors.WithMessage(err, "can not conn to tron grpc")
+	if err := conn.Start(grpc.WithTransportCredentials(insecure.NewCredentials())); err != nil {
+		return nil, errors.WithMessage(err, "wrong to start Tron gRPC client connection")
 	}
 	return conn, nil
 }

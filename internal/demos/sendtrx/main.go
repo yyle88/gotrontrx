@@ -40,7 +40,7 @@ func main() {
 	fmt.Println("from_address:", fromAddress)
 	fmt.Println("to_address:", toAddress)
 	fmt.Println("amount:", amount)
-	fmt.Println("private_key_hex_size:", len(privateKeyHex))
+	fmt.Println("private_key_hex_length:", len(privateKeyHex))
 
 	must.Nice(grpcAddress)
 	must.Nice(fromAddress)
@@ -48,9 +48,9 @@ func main() {
 	must.Nice(amount)
 	must.Nice(privateKeyHex)
 
-	client := rese.P1(gotrongrpc.NewClientWithAddress(grpcAddress))
+	client := gotrongrpc.NewClient(rese.P1(gotrongrpc.NewGrpcClient(grpcAddress)))
 
-	rawTransaction := rese.P1(client.GetGrpcClient().Transfer(
+	rawTransaction := rese.P1(client.GetGrpc().Transfer(
 		fromAddress, // 发送者，也就是您，的钱包地址
 		toAddress,   // 接收者的钱包地址
 		amount,      // 要发送的数量，注意因为这里是整数，需要自行转换单位
@@ -63,11 +63,8 @@ func main() {
 }
 
 func signTransaction(privateKeyHex string, txRaw *core.TransactionRaw) []byte {
-	txData := rese.V1(protojson.Marshal(txRaw))
-	fmt.Println("tx_neat:", neatjsons.SxB(txData))
-
-	txHash := rese.C1(gotronhash.GetTxHash(txRaw))
-	fmt.Println("tx_hash:", txHash)
+	fmt.Println("tx_data:", neatjsons.SxB(rese.V1(protojson.Marshal(txRaw))))
+	fmt.Println("tx_hash:", rese.C1(gotronhash.GetTxHash(txRaw)))
 
 	signature := rese.V1(gotronsign.Sign(privateKeyHex, txRaw))
 	fmt.Println(len(signature))
@@ -81,7 +78,7 @@ func sendTransaction(client *gotrongrpc.Client, txRaw *core.TransactionRaw, sign
 		Signature: [][]byte{signature},
 	}
 
-	resp := rese.P1(client.GetGrpcClient().Broadcast(signedTransaction))
+	resp := rese.P1(client.GetGrpc().Broadcast(signedTransaction))
 	fmt.Println(neatjsons.S(resp))
 
 	must.True(resp.GetResult())

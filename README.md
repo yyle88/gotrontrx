@@ -1,63 +1,127 @@
 # gotrontrx
-以前叫 gotron 但感觉这个名字会和别人的包重名和冲突，既然如此叫 gotrontrx 吧，这样相对不容易冲突
 
-## 第一步创建钱包：
+`gotrontrx` is a Go toolkit exploring TRON blockchain tech without participating in crypto coins.
 
-使用这段代码能创建钱包：
+`gotrontrx` package interacts with the TRON network via a gRPC client, enabling developers to seamlessly execute the full workflow of transaction creation, signing, and broadcasting.
+
+---
+
+## CHINESE README
+
+[中文说明](README.zh.md)
+
+---
+
+## Features
+
+- **gRPC Client Support**: Establish connections with TRON nodes via gRPC, supporting both mainnet and testnet nodes.
+- **Account and Transfer Operations**: Facilitate transactions, including specifying sender, recipient, and amount.
+- **Transaction Signing**: Enable transaction signing using private keys to ensure security.
+- **Transaction Broadcasting**: Broadcast signed transactions to the blockchain network.
+- **Transaction Hash Calculation**: Provide tools for calculating transaction hashes.
+- **Response Handling**: Offer structured processing of TRON gRPC API responses.
+
+## Dependencies
+
+- `github.com/fbsobreira/gotron-sdk`: Basic client of TRON gRPC APIs.
+- `github.com/yyle88/gotrontrx`: Simple TRON operations.
+- `neatjson`: Neat and structured output of information.
+- `must`: Simple assertions in conditions.
+- `rese`: Reduce boilerplate code for error handling.
+
+## Installation
+
+```bash
+go get github.com/yyle88/gotrontrx
+```
+
+## Quick Start
+
+Here are the primary functions:
+
+- **`gotrongrpc.NewClient`**: Initialize a gRPC client to connect to TRON nodes.
+- **`client.GetGrpc().Transfer`**: Create a transfer transaction.
+- **`gotronsign.Sign`**: Sign a transaction using a private key.
+- **`client.GetGrpc().Broadcast`**: Broadcast the signed transaction to the network.
+
+`gotrontrx` allow developers to efficiently build TRON blockchain-based applications.
+
+## Important Notes
+
+1. **Security Precautions**: Never input your private key directly into the terminal in production environments to prevent leaks.
+2. **Test Environment**: Use the testnet for debugging to avoid financial losses from unintended operations.
+3. **Data Validation**: Ensure that input addresses and amounts are valid and compliant with TRON blockchain requirements.
+
+## TRON Guide
+
+`gotrontrx` package provides a straightforward introduction to TRON, along with essential knowledge for working with its blockchain.
+
+### Step 1: Create a Wallet
+
+You can generate a wallet offline using the following code:  
 https://gist.github.com/motopig/c680f53897429fd15f5b3ca9aa6f6ed2
-把代码拷贝下来，在自己电脑里运行。
 
-当然其它的也能创建钱包。
+Copy the code and run it on your local machine. Alternatively, you can use other offline tools for wallet creation.
 
-区块链的钱包创建是离线的，你可以使用任意你觉得趁手的离线工具生成你的钱包（任何通过网页在线创建私钥的行为都是耍流氓）
+**Important:** Blockchain wallets should always be created offline. Never use online services to generate private keys as they may not safe.
 
-## 第二步去链上查钱包信息-主要是余额信息：
+### Step 2: Check Wallet Information
 
-创建完即可在测试链查看资产情况：
+Once the wallet is created, you can check its balance and information on the blockchain. For example, use the TRON testnet explorer website:  
 https://shasta.tronscan.org/#/address/TBYHGsFkshasvB3R6Zys4627h98owvUNFn
 
-只要你创建完钱包，在任意波场链（即主网，shasta测试网，nile测试网）查询都是能查到信息（但资产都是空的，是个空账号）
+### Step 3: Obtain Test TRX
 
-注意保存好你的私钥
+Developers can join the official TRON Telegram groups to request 5,000 TRX test tokens:
+- Chinese Support: [TRON 官方中文客服群](https://t.me/TronOfficialTechSupport)
+- English Support: [TRON Official Developers Group](https://t.me/TronOfficialDevelopersGroupEn)
 
-你可以在任意波场链里给这个地址转账，结果都会让它有资金，也都可以向外转账。
-
-但是请注意通常一个私钥只用在一个链，避免私钥泄露（只能在某种程度上避免）。
-
-## 第三步领取测试币TRX
-在波场官方中文客服群里即可领取测试币5000个TRX：
-https://t.me/TronOfficialTechSupport
-
-当然在英文Telegram群里也能领取5000个TRX测试币：
-@TronOfficialDevelopersGroupEn
-
-具体操作进群以后输入消息（在以上两个群里均可）:
+Send the following message in either group to receive instructions:
 ```
 !help
 ```
-你自然就会啦。
 
-## 第四步使用本SDK进行转账等操作吧
-当然为避免私钥泄露，只建议使用测试链钱包验证以下的Demo:
-[DEMO 最基本的trx转账](internal/demos/sendtrx/main.go)
+### Step 4: Use This SDK to Perform Transactions
 
-## 其它的免责声明：
-数字货币都是骗局
+Use a testnet wallet to try out the SDK functionalities. see: [Basic-TRX-Transfer-DemoCode](internal/demos/sendtrx/main.go).
 
-都是以空气币掠夺平民财富
+---
 
-没有公平正义可言
+## DISCLAIMER
 
-数字货币对中老年人是极不友好的，因为他们没有机会接触这类披着高科技外衣的割韭菜工具
+Crypto coin, at its core, is nothing but a scam. It thrives on the concept of "air coins"—valueless digital assets—to exploit the hard-earned wealth of ordinary people, all under the guise of innovation and progress. This ecosystem is inherently devoid of fairness or justice.
 
-数字货币对青少年也是极不友好的，因为当他们接触的时候，前面的人已经占据了大量的资源
+For the elderly, cryptocurrencies present significant challenges and risks. The so-called "high-tech" façade often excludes them from understanding or engaging with these tools. Instead, they become easy targets for financial exploitation, stripped of the resources they worked a lifetime to accumulate.
 
-因此妄图以数字货币，比如稍微主流的 BTC ETH TRX 代替世界货币的操作，都是不可能实现的
+The younger generation faces a different but equally insidious issue. By the time they have the opportunity to engage, the early adopters have already hoarded the lion’s share of resources. The system is inherently tilted, offering little chance for new entrants to gain a fair footing.
 
-都不过是早先持有数字货币的八零后们的无耻幻想
+The idea that cryptocurrencies like BTC, ETH, or TRX could replace global fiat currencies is nothing more than a pipe dream. This notion serves only as the shameless fantasy of early adopters, particularly those from the 1980s generation, who hoarded significant amounts of crypto coin before the general public even had an opportunity to participate.
 
-扪心自问，持有几千甚至数万个比特币的人会觉得公平吗，其实不会的
+Ask yourself this: would someone holding thousands, or even tens of thousands, of Bitcoin ever genuinely believe the system is fair? The answer is unequivocally no. These systems were never designed with fairness in mind but rather to entrench the advantages of a select few.
 
-因此未来还会有新事物来代替它们，而我现在也不过只是了解其中的技术，仅此而已。
+The rise of cryptocurrencies is not the endgame. It is inevitable that new innovations will emerge, replacing these deeply flawed systems. At this moment, my interest lies purely in understanding the underlying technology—nothing more, nothing less.
 
-该项目作者坚定持有“坚决抵制数字货币”的立场。
+This project exists solely for the purpose of technical learning and exploration. The author of this project maintains a firm and unequivocal stance of *staunch resistance to cryptocurrencies*.
+
+--- 
+
+## License
+
+`gotrontrx` is open-source and released under the MIT License. See the [LICENSE](LICENSE) file for more information.
+
+---
+
+## Support
+
+Welcome to contribute to this project by submitting pull requests or reporting issues.
+
+If you find this package helpful, give it a star on GitHub!
+
+**Thank you for your support!**
+
+**Happy Coding with `gotrontrx`!** 🎉
+
+Give me stars. Thank you!!!
+
+## See stars
+[![see stars](https://starchart.cc/yyle88/gotrontrx.svg?variant=adaptive)](https://starchart.cc/yyle88/gotrontrx)

@@ -1,40 +1,34 @@
-package gotrongrpc
+package examples
 
 import (
 	"math/big"
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/yyle88/gotrontrx/gotrongrpc"
 	"github.com/yyle88/neatjson/neatjsons"
+	"github.com/yyle88/rese"
 )
 
-var caseClient *Client
-var caseClientShasta *Client
+var caseClient *gotrongrpc.Client
 
 func TestMain(m *testing.M) {
-	caseClient = mustNewClient(MainnetGrpc)
-	caseClientShasta = mustNewClient(ShastaNetGrpc)
+	caseClient = gotrongrpc.NewClient(rese.P1(gotrongrpc.NewGrpcClient(gotrongrpc.MainNetGrpc)))
 	m.Run()
 }
 
-func TestGrpcClient_Transfer(t *testing.T) {
-	txn, err := caseClient.grpcClient.Transfer(
+func TestGrpcClient_Transfer_Transaction(t *testing.T) {
+	rawTransaction, err := caseClient.GetGrpc().Transfer(
 		"TMuA6YqfCeX8EhbfYEg5y7S4DqzSJireY9",
 		"TRJvQFUWwSmnk5rgM8m4HgE6Csj2qPEupX",
 		1000,
 	)
 	require.NoError(t, err)
-	t.Log(neatjsons.S(txn))
-}
-
-func TestGrpcClient_Balance(t *testing.T) {
-	txn, err := caseClientShasta.grpcClient.GetAccountDetailed("TBYHGsFkshasvB3R6Zys4627h98owvUNFn")
-	require.NoError(t, err)
-	t.Log(neatjsons.S(txn))
+	t.Log(neatjsons.S(rawTransaction))
 }
 
 func TestGrpcClient_TRC20Send(t *testing.T) {
-	txn, err := caseClient.grpcClient.TRC20Send(
+	rawTransaction, err := caseClient.GetGrpc().TRC20Send(
 		"TWd4WrZ9wn84f5x1hZhL4DHvk738ns5jwb",
 		"TEpjT8xbAe3FPCPFziqFfEjLVXaw9NbGXj",
 		"TAFjULxiVgT4qWk6UZwjqwZXTSaGaqnVp4",
@@ -42,16 +36,7 @@ func TestGrpcClient_TRC20Send(t *testing.T) {
 		200,
 	)
 	require.NoError(t, err)
-	t.Log(neatjsons.S(txn))
-}
-
-func TestGrpcClient_TRC20ContractBalance(t *testing.T) {
-	value, err := caseClientShasta.grpcClient.TRC20ContractBalance(
-		"THidAkJ7mmWPuEuM9BsoNYsXLpWU6SBJ7h",
-		"TG3XXyExBkPp9nzdajDZsozEu4BkaSJozs",
-	)
-	require.NoError(t, err)
-	t.Log(neatjsons.S(value))
+	t.Log(neatjsons.S(rawTransaction))
 }
 
 func TestGrpcClient_TRC20Allowance(t *testing.T) {
@@ -92,14 +77,4 @@ func TestGrpcClient_TRC20Allowance_4(t *testing.T) {
 	)
 	require.NoError(t, err)
 	t.Log(value.String())
-}
-
-func TestGrpcClient_Transfer_LuoLuoToFengGe(t *testing.T) {
-	txn, err := caseClientShasta.grpcClient.Transfer(
-		"TBYHGsFkshasvB3R6Zys4627h98owvUNFn",
-		"TEucCiybmbLhG8it1RM31js91fMLCjEARY",
-		5000000,
-	)
-	require.NoError(t, err)
-	t.Log(neatjsons.S(txn))
 }
