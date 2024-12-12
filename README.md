@@ -39,7 +39,7 @@ https://t.me/TronOfficialTechSupport
 
 ## 第四步使用本SDK进行转账等操作吧
 当然为避免私钥泄露，只建议使用测试链钱包验证以下的Demo:
-[DEMO 最基本的trx转账](/demos/main_sendtrx/main.go)
+[DEMO 最基本的trx转账](internal/demos/sendtrx/main.go)
 
 ## 其它的免责声明：
 数字货币都是骗局

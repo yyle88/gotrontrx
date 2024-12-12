@@ -9,21 +9,13 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func GetTxHashHex(rawTx *core.TransactionRaw) (string, error) {
-	raw, err := proto.Marshal(rawTx)
+func GetTxHash(txRaw *core.TransactionRaw) (string, error) {
+	raw, err := proto.Marshal(txRaw)
 	if err != nil {
 		return "", errors.WithMessage(err, "proto.marshal raw_tx is wrong")
 	}
-	return GetRawTxHashHex(raw), nil
-}
-
-func GetRawTxHashHex(raw []byte) string {
-	return hex.EncodeToString(GetRawTxHash(raw))
-}
-
-func GetRawTxHash(raw []byte) []byte {
-	h256h := sha256.New()
-	h256h.Write(raw)
-	rawHash := h256h.Sum(nil)
-	return rawHash
+	sha256h := sha256.New()
+	sha256h.Write(raw)
+	rawHash := sha256h.Sum(nil)
+	return hex.EncodeToString(rawHash), nil
 }
