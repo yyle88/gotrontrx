@@ -125,7 +125,7 @@ https://t.me/TronOfficialTechSupport
 
 ## 许可
 
-`gotrontrx` 是一个开源项目，发布于 MIT 许可证下。有关更多信息，请参阅 [LICENSE](LICENSE) 文件。
+项目采用 MIT 许可证，详情请参阅 [LICENSE](LICENSE)。
 
 ## 贡献与支持
 
