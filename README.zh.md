@@ -1,3 +1,22 @@
+[![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/yyle88/gotrontrx/release.yml?branch=main&label=BUILD)](https://github.com/yyle88/gotrontrx/actions/workflows/release.yml?query=branch%3Amain)
+[![GoDoc](https://pkg.go.dev/badge/github.com/yyle88/gotrontrx)](https://pkg.go.dev/github.com/yyle88/gotrontrx)
+[![Coverage Status](https://img.shields.io/coveralls/github/yyle88/gotrontrx/main.svg)](https://coveralls.io/github/yyle88/gotrontrx?branch=main)
+[![Supported Go Versions](https://img.shields.io/badge/Go-1.22--1.25-lightgrey.svg)](https://github.com/yyle88/gotrontrx)
+[![GitHub Release](https://img.shields.io/github/release/yyle88/gotrontrx.svg)](https://github.com/yyle88/gotrontrx/releases)
+[![Go Report Card](https://goreportcard.com/badge/github.com/yyle88/gotrontrx)](https://goreportcard.com/report/github.com/yyle88/gotrontrx)
+
+<p align="center">
+  <img
+    alt="wojack-cartoon logo"
+    src="assets/wojack-cartoon.jpeg"
+    style="max-height: 500px; width: auto; max-width: 100%;"
+  />
+</p>
+<h3 align="center">golang-tron</h3>
+<p align="center">使用 golang 创建/签名 <code>tron transaction</code></p>
+
+---
+
 # gotrontrx
 
 `gotrontrx` 是一个 Go 工具包，用于探索 TRON 区块链技术，而不参与加密货币活动。
@@ -6,9 +25,11 @@
 
 ---
 
+<!-- TEMPLATE (ZH) BEGIN: LANGUAGE NAVIGATION -->
 ## 英文文档
 
 [ENGLISH README](README.md)
+<!-- TEMPLATE (ZH) END: LANGUAGE NAVIGATION -->
 
 ---
 
@@ -39,12 +60,120 @@ go get github.com/yyle88/gotrontrx
 
 以下是一些核心功能的作用：
 
-- **`gotrongrpc.NewClient`**: 初始化 gRPC 客户端，用于连接波场节点。
-- **`client.GetGrpc().Transfer`**: 构建转账交易。
+- **`gotrongrpc.NewGrpcClient`**: 初始化 gRPC 客户端，用于连接波场节点。
+- **`grpcClient.Transfer`**: 构建转账交易。
 - **`gotronsign.Sign`**: 使用私钥对交易进行签名。
-- **`client.GetGrpc().Broadcast`**: 广播签名后的交易到网络中。
+- **`grpcClient.Broadcast`**: 广播签名后的交易到网络中。
 
 通过这些功能，开发者可以快速实现基于波场区块链的应用开发。
+
+## 使用方法
+
+### 基本 TRX 转账交易
+
+此示例展示创建、签名和广播 TRX 转账交易的完整工作流程。
+
+```go
+package main
+
+import (
+	"encoding/base64"
+	"flag"
+	"fmt"
+
+	"github.com/fbsobreira/gotron-sdk/pkg/client"
+	"github.com/fbsobreira/gotron-sdk/pkg/proto/api"
+	"github.com/fbsobreira/gotron-sdk/pkg/proto/core"
+	"github.com/yyle88/gotrontrx/gotrongrpc"
+	"github.com/yyle88/gotrontrx/gotronhash"
+	"github.com/yyle88/gotrontrx/gotronsign"
+	"github.com/yyle88/must"
+	"github.com/yyle88/neatjson/neatjsons"
+	"github.com/yyle88/rese"
+	"google.golang.org/protobuf/encoding/protojson"
+)
+
+func main() {
+	var grpcAddress string
+	var fromAddress string
+	var toAddress string
+	var amount int64
+	var privateKeyHex string
+
+	flag.StringVar(&grpcAddress, "grpc", gotrongrpc.ShastaNetGrpc, "波场节点的grpc地址")
+	flag.StringVar(&fromAddress, "from", "", "发送方地址")
+	flag.StringVar(&toAddress, "to", "", "接收方地址")
+	flag.Int64Var(&amount, "amount", 0, "金额(基础单位)")
+	flag.StringVar(&privateKeyHex, "pk", "", "私钥十六进制")
+	flag.Parse()
+
+	// 显示配置参数
+	fmt.Println("grpc_address:", grpcAddress)
+	fmt.Println("from_address:", fromAddress)
+	fmt.Println("to_address:", toAddress)
+	fmt.Println("amount:", amount)
+	fmt.Println("private_key_hex_length:", len(privateKeyHex))
+
+	// 验证必需参数是否已提供
+	must.Nice(grpcAddress)
+	must.Nice(fromAddress)
+	must.Nice(toAddress)
+	must.Nice(amount)
+	must.Nice(privateKeyHex)
+
+	// 连接到 TRON 网络
+	grpcClient := rese.P1(gotrongrpc.NewGrpcClient(grpcAddress))
+
+	// 创建 TRX 交易
+	rawTransaction := rese.P1(grpcClient.Transfer(
+		fromAddress, // 发送者钱包地址
+		toAddress,   // 接收者钱包地址
+		amount,      // 基础单位金额
+	))
+	fmt.Println(neatjsons.S(rawTransaction))
+
+	// 使用私钥签名交易
+	signature := signTransaction(privateKeyHex, rawTransaction.Transaction.RawData)
+
+	// 广播已签名交易到网络
+	sendTransaction(grpcClient, rawTransaction.Transaction.RawData, signature)
+}
+
+func signTransaction(privateKeyHex string, txRaw *core.TransactionRaw) []byte {
+	// 以 JSON 格式显示交易数据
+	fmt.Println("tx_data:", neatjsons.SxB(rese.V1(protojson.Marshal(txRaw))))
+
+	// 显示交易哈希
+	fmt.Println("tx_hash:", rese.C1(gotronhash.GetTxHash(txRaw)))
+
+	// 生成 ECDSA 签名
+	signature := rese.V1(gotronsign.Sign(privateKeyHex, txRaw))
+	fmt.Println(len(signature))
+	fmt.Println(base64.StdEncoding.EncodeToString(signature))
+	return signature
+}
+
+func sendTransaction(grpcClient *client.GrpcClient, txRaw *core.TransactionRaw, signature []byte) {
+	// 构建已签名交易
+	signedTransaction := &core.Transaction{
+		RawData:   txRaw,
+		Signature: [][]byte{signature},
+	}
+
+	// 广播交易到网络
+	resp := rese.P1(grpcClient.Broadcast(signedTransaction))
+	fmt.Println(neatjsons.S(resp))
+
+	// 验证广播响应
+	must.True(resp.GetResult())
+	must.Equals(resp.Code, api.Return_SUCCESS)
+	must.None(string(resp.Message))
+
+	fmt.Println("success")
+}
+```
+
+⬆️ **源码：** [源码](internal/demos/demo1x/main.go)
 
 ## 注意事项
 
@@ -95,7 +224,11 @@ https://t.me/TronOfficialTechSupport
 
 ### 第四步-使用本SDK进行转账等操作吧
 
-当然为避免私钥泄露，只建议使用测试链钱包验证以下的Demo: [基本的-TRX-转账-演示代码](internal/demos/sendtrx/main.go)
+当然为避免私钥泄露，只建议使用测试链钱包验证以下的Demo。
+
+⬆️ **源码：** [基本 TRX 转账演示](internal/demos/demo1x/main.go)
+
+---
 
 ## 免责声明：
 
@@ -119,22 +252,72 @@ https://t.me/TronOfficialTechSupport
 
 该项目仅以技术学习和探索为目的而存在。
 
-该项目作者坚定持有“坚决抵制数字货币”的立场。
+该项目作者坚定持有"坚决抵制数字货币"的立场。
 
 ---
 
-## 许可
+<!-- TEMPLATE (ZH) BEGIN: STANDARD PROJECT FOOTER -->
+<!-- VERSION 2025-09-26 07:39:27.188023 +0000 UTC -->
 
-项目采用 MIT 许可证，详情请参阅 [LICENSE](LICENSE)。
+## 📄 许可证类型
 
-## 贡献与支持
+MIT 许可证。详见 [LICENSE](LICENSE)。
 
-欢迎通过提交 pull request 或报告问题来贡献此项目。
+---
 
-如果你觉得这个包对你有帮助，请在 GitHub 上给个 ⭐，感谢支持！！！
+## 🤝 项目贡献
 
-**感谢你的支持！**
+非常欢迎贡献代码！报告 BUG、建议功能、贡献代码：
 
-**祝编程愉快！** 🎉
+- 🐛 **发现问题？** 在 GitHub 上提交问题并附上重现步骤
+- 💡 **功能建议？** 创建 issue 讨论您的想法
+- 📖 **文档疑惑？** 报告问题，帮助我们改进文档
+- 🚀 **需要功能？** 分享使用场景，帮助理解需求
+- ⚡ **性能瓶颈？** 报告慢操作，帮助我们优化性能
+- 🔧 **配置困扰？** 询问复杂设置的相关问题
+- 📢 **关注进展？** 关注仓库以获取新版本和功能
+- 🌟 **成功案例？** 分享这个包如何改善工作流程
+- 💬 **反馈意见？** 欢迎提出建议和意见
 
-Give me stars. Thank you!!!
+---
+
+## 🔧 代码贡献
+
+新代码贡献，请遵循此流程：
+
+1. **Fork**：在 GitHub 上 Fork 仓库（使用网页界面）
+2. **克隆**：克隆 Fork 的项目（`git clone https://github.com/yourname/repo-name.git`）
+3. **导航**：进入克隆的项目（`cd repo-name`）
+4. **分支**：创建功能分支（`git checkout -b feature/xxx`）
+5. **编码**：实现您的更改并编写全面的测试
+6. **测试**：（Golang 项目）确保测试通过（`go test ./...`）并遵循 Go 代码风格约定
+7. **文档**：为面向用户的更改更新文档，并使用有意义的提交消息
+8. **暂存**：暂存更改（`git add .`）
+9. **提交**：提交更改（`git commit -m "Add feature xxx"`）确保向后兼容的代码
+10. **推送**：推送到分支（`git push origin feature/xxx`）
+11. **PR**：在 GitHub 上打开 Merge Request（在 GitHub 网页上）并提供详细描述
+
+请确保测试通过并包含相关的文档更新。
+
+---
+
+## 🌟 项目支持
+
+非常欢迎通过提交 Merge Request 和报告问题来为此项目做出贡献。
+
+**项目支持：**
+
+- ⭐ **给予星标**如果项目对您有帮助
+- 🤝 **分享项目**给团队成员和（golang）编程朋友
+- 📝 **撰写博客**关于开发工具和工作流程 - 我们提供写作支持
+- 🌟 **加入生态** - 致力于支持开源和（golang）开发场景
+
+**祝你用这个包编程愉快！** 🎉🎉🎉
+
+<!-- TEMPLATE (ZH) END: STANDARD PROJECT FOOTER -->
+
+---
+
+## GitHub 标星点赞
+
+[![starring](https://starchart.cc/yyle88/gotrontrx.svg?variant=adaptive)](https://starchart.cc/yyle88/gotrontrx)
